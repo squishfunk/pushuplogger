@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block title%} Moje konto{% endblock%}
+
+{% block sidenav %}
+
+{% endblock%}
+
+{% block content %}
+<h2><center>Lista TOP5 </center></h2>
+<ol style="font-size:30px"><center>
+{% for Pushup in top5_list %}
+    <li><td>{{Pushup.person_id__name}}</td> <td>{{Pushup.person_id__surname}}</td>   WYNIK: <td>{{Pushup.totalpushups}}</td></li>
+
+{% endfor %}
+</center></ol>
+{% endblock %}

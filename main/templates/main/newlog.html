@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+
+{% block title%} Nowy rekord{% endblock%}
+{% block sidenav %}
+{% endblock%}
+{% block content%}
+
+
+{% if submitted %}
+<center><p style="font-size:25px" >Twój rekord został dodany pomyślnie</p></center>
+
+{% else %}
+<h2><center>Dodaj nowy rekord</center></h2>
+
+<form action="" method="POST" id="formal" >
+
+    {% csrf_token %}
+
+    <center style="position:relative; top:150px;">
+        {{form.as_p}}
+
+        <input type="submit" id="add"value="Dodaj" class="btn btn-success" >
+    </center>
+
+</form>
+
+{% endif %}
+
+
+{% endblock%}
+
+
