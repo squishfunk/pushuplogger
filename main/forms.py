@@ -7,8 +7,3 @@ class Addnewlog(ModelForm):
         model = Pushup
         fields = ('person', 'pushups')
 
-    widgets = {
-
-        'pushups' : forms.TextInput(attrs={'class':'form-control' }),
-
-    }

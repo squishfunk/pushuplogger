@@ -9,6 +9,7 @@ import datetime as DT
 
 def viewcalendar(request,year, month):
     month = month.title()
+    datenow = DT.date.today()
     month_number = list(calendar.month_name).index(month)
     month_number = int(month_number)
 
@@ -17,6 +18,7 @@ def viewcalendar(request,year, month):
         "year":year,
         "month":month,
         "cal":cal,
+        "datenow":datenow
     })
 def view1(response):
     return render(response, 'main/base.html', {})

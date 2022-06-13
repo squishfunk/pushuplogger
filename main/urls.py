@@ -9,5 +9,4 @@ urlpatterns = [
     path("top5/", views.viewtop5, name="top5"),
     path("top3/", views.viewtop3, name="top3"),
 
-
 ]

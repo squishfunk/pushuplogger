@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 class Person(models.Model):
     id = models.AutoField(primary_key=True)
@@ -16,7 +17,7 @@ class Pushup(models.Model):
 
     person = models.ForeignKey(Person,on_delete=models.CASCADE)
     date = models.DateField(auto_now_add="True")
-    pushups = models.IntegerField(default=0)
+    pushups = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return str(self.person)
