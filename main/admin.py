@@ -1,17 +1,21 @@
 from django.contrib import admin
-from .models import Person
-from .models import Pushup
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
+from .models import Pushup, Person
 
-#admin.site.register(Person)
-#admin.site.register(Pushup)
+class PersonInline(admin.StackedInline):
+    model = Person
+    can_delete = False
+    verbose_name_plural = 'People'
 
-@admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('surname', 'name', 'id', 'age')
-    search_fields = ('name', 'id', 'age')
+class CustomUserAdmin(UserAdmin):
+    inlines = (PersonInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 
 @admin.register(Pushup)
 class PushupAdmin(admin.ModelAdmin):
-    list_display = ('person', 'date', 'pushups')
+    list_display = ('user', 'date', 'pushups')
     search_fields = ('name', 'date')
-# Register your models here.
+

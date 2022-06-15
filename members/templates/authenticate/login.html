@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title%} Logowanie{% endblock%}
+
+{% block content%}
+
+
+<h2><center>Zaloguj</center></h2>
+
+<form action="" method="POST" id="formal" >
+
+    {% csrf_token %}
+
+    <center style="position:relative; top:150px;">
+
+
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Nazwa użytkownika</label>
+    <input type="text" class="form-control" name="username" aria-describedby="emailHelp">
+
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" name="password">
+  </div>
+
+
+        <input type="submit" id="add"value="Zaloguj" class="btn btn-success" >
+    </center>
+
+</form>
+
+
+
+
+{% endblock%}
+

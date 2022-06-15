@@ -7,7 +7,7 @@
 <h2><center>Lista TOP3 </center></h2>
 <ol style="font-size:30px"><center>
     {% for position in top3_list %}
-        <li><td>{{position.person_id__name}}</td>  <td>{{position.person_id__surname}}</td>   WYNIK: <td>{{position.totalseries}}</td></li>
+        <li><td>{{position.user__person__name}}</td> <td>{{position.user__person__surname}}</td>   WYNIK: <td>{{position.totalseries}}</td></li>
 
     {% endfor %}
 </center></ol>
