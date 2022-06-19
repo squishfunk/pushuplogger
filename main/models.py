@@ -4,7 +4,6 @@ from django.core.validators import MinValueValidator
 
 class Person(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    #id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     surname = models.CharField(max_length=30)
     nickname = models.CharField(max_length=30, blank=True)
@@ -13,8 +12,7 @@ class Person(models.Model):
     def __str__(self):
         return self.user.username
 
-    #def __str__(self):
-    #    return self.user.person.name + ' ' + self.person.surname
+
 
 
 

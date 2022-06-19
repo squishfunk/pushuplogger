@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -37,28 +38,30 @@
 
     <title>{% block title%} LOGGER POMPK {% endblock%}</title>
 </head>
-<body bgcolor="#0BCE25">
+<body {% block body %} {% endblock %}>
+<!--bgcolor="#0BCE25" id="bg" style="background-image: url('{% static 'main/images/pompka1.jpg'%}')" -->
     <div class="sidenav">
         <a style="color:#FFFFFF; font-size:200%"><strong>LOGGER POMPEK</strong></a>
         {% if user.is_authenticated %}
         <center><p style="color:#FFFFFF">Witaj {{ user.person.name }}</p></center>
         {% else %}
-            <p></p>
         {% endif %}
 
         <a href="/mainpage/">Strona główna</a>
+
         {% if user.is_authenticated %}
+
             <a href="/home/"> Strona domowa</a>
             <a href="/newlog/"> Dodaj nowy rekord</a>
-            <a href="{% url 'recordpdf' %}"> Generuj PDF</a>
-        {% else %}
 
+        {% else %}
         {% endif %}
 
-
-        <a href="/top5/"> Tablica TOP5</a>
         <a href="/top3/"> Tablica TOP3</a>
+        <a href="/top5/"> Tablica TOP5</a>
+
         {% if user.is_authenticated %}
+            <a href="{% url 'recordpdf' %}"> Generuj PDF</a>
             <a href="{% url 'logout' %}"> Wyloguj</a>
         {% else %}
             <a href="{% url 'login' %}"> Zaloguj</a>
@@ -66,7 +69,7 @@
 
 
     </div>
-    <div id="content", name="content", class="main">
+    <div id="content" name="content" class="main">
         <h1><center><font size="25"></font></center></h1>
 
 

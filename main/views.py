@@ -14,6 +14,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import letter
 
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+
 def viewpdf(request):
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
@@ -78,11 +82,13 @@ def viewmainpage(response):
     })
 
 def viewhome(request):
+
     myrecord_list = Pushup.objects.filter(user=request.user)
 
     return render(request, 'main/home.html', {'myrecord_list': myrecord_list})
 
 def viewmylogs(response):
+
     return render(response, 'main/calendar.html', {})
 
 
@@ -95,6 +101,7 @@ def viewnewlog(request):
 
         if Pushup.objects.filter(user=request.user,date__gte=dt.date.today() - dt.timedelta(days=1)).exists():
             return HttpResponseBadRequest("Błąd: Rekord danego użytkownika został już dzisiaj dodany")
+
         form = Addnewlog(request.POST)
 
         if form.is_valid():
@@ -102,6 +109,17 @@ def viewnewlog(request):
             PushupForm.user = request.user
             PushupForm.save()
 
+            template = render_to_string('main/emailtemplate.html', {'name':request.user.person.name, 'pushups':PushupForm.pushups,})
+
+            email = EmailMessage(
+                'LOGGER POMPEK: Dodano rekord',
+                template,
+                settings.EMAIL_HOST_USER,
+                [request.user.email],
+            )
+
+            email.fail_silently = False
+            email.send()
 
             return HttpResponseRedirect("/newlog?submitted=True")
     else:
@@ -127,4 +145,3 @@ def viewtop3(request):
 
     return render(request, 'main/top3.html', {'top3_list': top3_list})
 
-# Create your views here.

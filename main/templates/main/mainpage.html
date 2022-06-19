@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block title%} Strona domowa{% endblock%}
 
@@ -6,30 +7,27 @@
 <a href="http://127.0.0.1:8000/members/login/"> Logowanie</a>
 {% endblock%}
 {% block content%}
-<h2><center>Strona główna</center></h2>
+<center><h2>Strona główna</h2></center>
 <br>
 <br>
 <br>
-<center><p style="font-size:160%;">Logger pompek to aplikacja internetowa stworzna w celu łatwwego i szybkiego zliczania
-codziennie wykonywanych pompek. Przy użyciu opcji <b>Dodaj nowy rekord</b> można dodać do bazy danych swój
-wynik <strong>(Tylko jeden raz dziennie)</strong>, a w zakładkach <b>Tablicach wyników</b> można zobaczyć <b>5</b> osób, którym udało się
-zrobić najwiekszą łączną liczbę pompek w ciągu ostatnich 7 dni, a takżę <b>3</b> osoby, które wykonały najwięcej
-treningów w osatnim miesiącu.</p></center>
+<center><p style="font-size:160%;">Logger pompek to aplikacja internetowa stworzna w celu łatwego i szybkiego zliczania
+codziennie wykonywanych pompek. Po zalogowaniu przy użyciu opcji <b>Dodaj nowy rekord</b> można dodać do bazy danych swój
+wynik <strong>(tylko jeden raz dziennie)</strong>, a także wygenerować plik PDF z wszystkimi dodanymi wynikami.</p></center>
+<br>
+<center><img src="{% static 'main/images/pompka.gif'%}" alt="Poprawna pompka" width="50%"></center>
 
-<br>
-<br>
-<p style="font-size:120%;"><center>Pompka (właśc.: uginanie i prostowanie ramion w podporze przodem) – popularna nazwa ćwiczenia fizycznego wykonywanego w pozycji poziomej,
+<center><p style="font-size:120%;">Pompka (właśc.: uginanie i prostowanie ramion w podporze przodem) – popularna nazwa ćwiczenia fizycznego wykonywanego w pozycji poziomej,
     twarzą do ziemi, polegającego na podnoszeniu i obniżaniu tułowia. Wykonywanie pompek rozwija mięśnie piersiowe i mięsień trójgłowy ramienia (pot. triceps),
-    a także mięsień naramienny, mięsień zębaty przedni i mięsień kruczo-ramienny (aby nie doznać kontuzji, należy rozgrzać przynajmniej mięśnie rąk i brzucha).</center>
-</p>
+    a także mięsień naramienny, mięsień zębaty przedni i mięsień kruczo-ramienny (aby nie doznać kontuzji, należy rozgrzać przynajmniej mięśnie rąk i brzucha).</p></center>
 <br>
 <center><p style="font-size:140%;"><strong>Należy przestrzegać kilku podstawowych zasad, żeby prawidłowo wykonywać klasyczne pompki:</strong>
-<ul style="font-size:160%;">
+<ul style="font-size:140%;">
     <li>ciało powinno być wyprostowane (bardzo częsty błąd)</li>
     <li>stopy powinny być ułożone blisko siebie (należy opierać się na palcach)</li>
     <li>ręce powinny być ułożone nieco szerzej niż klatka piersiowa</li>
     <li>dłonie lekko odchylone na zewnątrz</li>
     <li>należy opuszczać tułów do momentu, aż w stawie łokciowym utworzy się kąt prosty (przy czym plecy mają być cały czas proste)</li>
-<</ul></p></center>
+</ul></p></center>
 {% endblock%}
 

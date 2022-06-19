@@ -1,8 +1,9 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block title%} Nowy rekord{% endblock%}
-{% block sidenav %}
-{% endblock%}
+{% block body%} id="bg" style="background-image: url('{% static 'main/images/pompka1.jpg'%}')" {% endblock %}
+
 {% block content%}
 
 
@@ -10,7 +11,7 @@
 <center><p style="font-size:25px" >Twój rekord został dodany pomyślnie</p></center>
 
 {% else %}
-<h2><center>Dodaj nowy rekord</center></h2>
+<center><h2>Dodaj nowy rekord</h2></center>
 
 <form action="" method="POST" id="formal" >
 
@@ -20,12 +21,16 @@
     <center style="position:relative; top:150px;">
         {{form.as_p}}
 
-        <input type="submit" id="add"value="Dodaj" class="btn btn-success" >
+        <input type="submit" id="add" value="Dodaj" class="btn btn-success" >
     </center>
 
 </form>
 
 {% endif %}
+<br/>
+<br/>
+<!--<center><img src="{% static 'main/images/pompka1.jpg' %}" alt="Pompka" width="80%"></center>
+-->
 
 
 {% endblock%}

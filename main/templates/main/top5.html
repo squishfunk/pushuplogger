@@ -7,8 +7,9 @@
 {% endblock%}
 
 {% block content %}
-<h2><center>Lista TOP5 </center></h2>
-<ol style="font-size:30px"><center>
+<h2><center>Lista TOP 5 </center></h2>
+<h4><center>Lista 5 użytkowników, którzy wykonali najwiecej pompek w ciągu ostatniego tygodnia </center></h4>
+<ol style="font-size:40px; position:relative; top:200px"><center>
 {% for Pushup in top5_list %}
 
     <li><td>{{Pushup.user__person__name}}</td> <td>{{Pushup.user__person__surname}}</td>   WYNIK: <td>{{Pushup.totalpushups}}</td></li>

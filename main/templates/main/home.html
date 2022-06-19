@@ -7,10 +7,14 @@
 {% endblock%}
 {% block content%}
 <h2><center>Strona domowa</center></h2>
+<br/>
+<br/>
 <h3><center>Moje wyniki</center></h3>
-<ol style="font-size:30px"><center>
+<br/>
+<ol style="font-size:25px"><center>
     {% for position in myrecord_list %}
-        <li><td>Data: {{position.date}}</td>   WYNIK: <td>{{position.pushups}}</td></li>
+        <li><td>Data:&nbsp;&nbsp;&nbsp;{{position.date}}</td>&nbsp;&nbsp; &nbsp;WYNIK:&nbsp;&nbsp; <td>{{position.pushups}}</td></li>
+
 
     {% endfor %}
 </center></ol>
