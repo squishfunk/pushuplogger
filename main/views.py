@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
-from .models import Pushup
+from .models import ExerciseLog, ExerciseType, Goal, Achievement, UserAchievement
 from django.contrib.auth.decorators import login_required
 from .forms import Addnewlog
 import calendar
@@ -17,7 +17,9 @@ from reportlab.lib.pagesizes import letter
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
+from .services import update_user_stats
 
+@login_required
 def viewpdf(request):
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
@@ -27,16 +29,14 @@ def viewpdf(request):
     text.setFont("Helvetica", 12)
 
     lines = []
-    records = Pushup.objects.filter(user=request.user)
-    current_user = request.user.person.name + ' ' + request.user.person.surname
+    records = ExerciseLog.objects.filter(user=request.user).order_by('-date')
+    current_user = f"{request.user.person.name} {request.user.person.surname}"
     lines.append(current_user)
     lines.append(" ")
 
     for record in records:
-        record_summary = "Data: " + str(record.date) + ' ' + "Wynik: " +  str(record.pushups)
+        record_summary = f"Data: {record.date} | {record.exercise_type.name}: {record.value}"
         lines.append(record_summary)
-
-
 
     for line in lines:
         text.textLine(line)
@@ -46,11 +46,7 @@ def viewpdf(request):
     c.save()
     buf.seek(0)
 
-
-
     return FileResponse(buf, as_attachment=True, filename="Moje rekordy.pdf")
-
-
 
 def viewcalendar(request, year, month):
     month = month.title()
@@ -66,11 +62,6 @@ def viewcalendar(request, year, month):
         "datenow":datenow
     })
 
-
-def view1(response):
-    return render(response, 'main/base.html', {})
-
-
 def viewmainpage(response):
     datenow = dt.date.today()
     month = datenow.strftime("%B")
@@ -81,66 +72,66 @@ def viewmainpage(response):
         "month": month,
     })
 
+@login_required
 def viewhome(request):
+    myrecord_list = ExerciseLog.objects.filter(user=request.user).order_by('-date')
+    stats = request.user.person
+    achievements = UserAchievement.objects.filter(user=request.user).select_related('achievement')
+    goals = Goal.objects.filter(user=request.user)
 
-    myrecord_list = Pushup.objects.filter(user=request.user)
-
-    return render(request, 'main/home.html', {'myrecord_list': myrecord_list})
-
-def viewmylogs(response):
-
-    return render(response, 'main/calendar.html', {})
-
+    return render(request, 'main/home.html', {
+        'myrecord_list': myrecord_list,
+        'stats': stats,
+        'achievements': achievements,
+        'goals': goals
+    })
 
 @login_required
 def viewnewlog(request):
-
     submitted = False
     if request.method == "POST":
-
-
-        if Pushup.objects.filter(user=request.user,date__gte=dt.date.today() - dt.timedelta(days=1)).exists():
-            return HttpResponseBadRequest("Błąd: Rekord danego użytkownika został już dzisiaj dodany")
+        # Sprawdzamy zasadę 1 wpisu dziennie
+        if ExerciseLog.objects.filter(user=request.user, date=dt.date.today()).exists():
+            return HttpResponseBadRequest("Błąd: Rekord na dzisiaj został już dodany. Możesz dodać tylko jeden wpis dziennie.")
 
         form = Addnewlog(request.POST)
-
         if form.is_valid():
-            PushupForm = form.save(commit=False)
-            PushupForm.user = request.user
-            PushupForm.save()
+            log = form.save(commit=False)
+            log.user = request.user
+            log.save()
 
-            template = render_to_string('main/emailtemplate.html', {'name':request.user.person.name, 'pushups':PushupForm.pushups,})
+            # Aktualizacja statystyk i osiągnięć
+            update_user_stats(request.user)
+
+            # Wysyłka maila
+            template = render_to_string('main/emailtemplate.html', {
+                'name': request.user.person.name, 
+                'exercise': log.exercise_type.name,
+                'value': log.value,
+            })
 
             email = EmailMessage(
-                'LOGGER POMPEK: Dodano rekord',
+                'LOGGER: Dodano nowy rekord',
                 template,
                 settings.EMAIL_HOST_USER,
                 [request.user.email],
             )
-
             email.send(fail_silently=True)
 
             return HttpResponseRedirect("/newlog?submitted=True")
     else:
-
-        form = Addnewlog
-
+        form = Addnewlog()
         if 'submitted' in request.GET:
             submitted = True
 
     return render(request, 'main/newlog.html', {"form": form, 'submitted': submitted})
 
-
 def viewtop5(request):
-
-    top5_list = Pushup.objects.filter(date__gte=dt.date.today()-dt.timedelta(days=7)).values('user__person__name', 'user__person__surname').annotate(totalpushups=Sum('pushups')).order_by('-totalpushups')[:5]
-
+    # Ranking sumaryczny wszystkich ćwiczeń z ostatnich 7 dni
+    top5_list = ExerciseLog.objects.filter(date__gte=dt.date.today()-dt.timedelta(days=7)).values('user__person__name', 'user__person__surname').annotate(totalvalue=Sum('value')).order_by('-totalvalue')[:5]
     return render(request, 'main/top5.html', {'top5_list': top5_list})
 
-
 def viewtop3(request):
-
-    top3_list = Pushup.objects.filter(date__gte=dt.date.today()-dt.timedelta(days=30)).values('user__person__name', 'user__person__surname').annotate(totalseries=Count('pushups')).order_by('-totalseries')[:3]
-
+    # Ranking regularności z ostatnich 30 dni
+    top3_list = ExerciseLog.objects.filter(date__gte=dt.date.today()-dt.timedelta(days=30)).values('user__person__name', 'user__person__surname').annotate(totalseries=Count('id')).order_by('-totalseries')[:3]
     return render(request, 'main/top3.html', {'top3_list': top3_list})
-

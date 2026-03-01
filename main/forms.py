@@ -1,8 +1,11 @@
-from django.forms import ModelForm
-from .models import Pushup
+from django import forms
+from .models import ExerciseLog, ExerciseType
 
-class Addnewlog(ModelForm):
+class Addnewlog(forms.ModelForm):
     class Meta:
-        model = Pushup
-        fields = ("pushups",)
-
+        model = ExerciseLog
+        fields = ("exercise_type", "value")
+        labels = {
+            'exercise_type': 'Rodzaj ćwiczenia',
+            'value': 'Liczba powtórzeń/sekund'
+        }

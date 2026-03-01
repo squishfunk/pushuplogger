@@ -1,27 +1,105 @@
 {% extends 'main/base.html' %}
 
-{% block title%} Strona domowa{% endblock%}
+{% block title %}Strona domowa{% endblock %}
 
-{% block sidenav %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Panel Użytkownika</h2>
 
-{% endblock%}
-{% block content%}
-<h2><center>Strona domowa</center></h2>
-<br/>
-<br/>
-<h3><center>Moje wyniki</center></h3>
-<br/>
-<ol style="font-size:25px"><center>
-    {% for position in myrecord_list %}
-        <li><td>Data:&nbsp;&nbsp;&nbsp;{{position.date}}</td>&nbsp;&nbsp; &nbsp;WYNIK:&nbsp;&nbsp; <td>{{position.pushups}}</td></li>
+    <!-- Statystyki -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Aktualny Streak</h5>
+                    <p class="card-text" style="font-size: 2rem;">🔥 {{ stats.current_streak }} dni</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Najdłuższy Streak</h5>
+                    <p class="card-text" style="font-size: 2rem;">🏆 {{ stats.longest_streak }} dni</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Ostatni trening</h5>
+                    <p class="card-text" style="font-size: 1.5rem;">📅 {{ stats.last_log_date|default:"Brak" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <!-- Cele -->
+        <div class="col-md-6">
+            <h3>Moje Cele</h3>
+            <ul class="list-group mb-4">
+                {% for goal in goals %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ goal.exercise_type.name }}: {{ goal.target_value }} powt.
+                    {% if goal.is_completed %}
+                    <span class="badge bg-success rounded-pill">Osiągnięty!</span>
+                    {% else %}
+                    <span class="badge bg-primary rounded-pill">W trakcie</span>
+                    {% endif %}
+                    <br><small>Do: {{ goal.end_date }}</small>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Brak aktywnych celów.</li>
+                {% endfor %}
+            </ul>
+        </div>
 
-    {% endfor %}
-</center></ol>
+        <!-- Osiągnięcia -->
+        <div class="col-md-6">
+            <h3>Osiągnięcia</h3>
+            <div class="row">
+                {% for ua in achievements %}
+                <div class="col-4 text-center mb-3">
+                    <div title="{{ ua.achievement.description }}">
+                        <div style="font-size: 3rem;">✨</div>
+                        <strong>{{ ua.achievement.name }}</strong>
+                    </div>
+                </div>
+                {% empty %}
+                <p>Jeszcze nie zdobyłeś żadnych osiągnięć. Do roboty!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-
-{% endblock%}
-
-
-
-
+    <!-- Historia -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <h3>Historia treningów</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Ćwiczenie</th>
+                        <th>Wynik</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for position in myrecord_list %}
+                    <tr>
+                        <td>{{ position.date }}</td>
+                        <td>{{ position.exercise_type.name }}</td>
+                        <td>{{ position.value }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">Brak wpisów.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
