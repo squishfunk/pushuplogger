@@ -1,6 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .forms import RegisterForm
+
+def register_user(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Rejestracja zakończona sukcesem!")
+            return redirect('home')
+        else:
+            messages.error(request, "Wystąpił błąd podczas rejestracji.")
+    else:
+        form = RegisterForm()
+    return render(request, 'authenticate/register.html', {'form': form})
 
 def login_user(request):
     if request.method=="POST":

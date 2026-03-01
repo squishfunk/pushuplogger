@@ -118,8 +118,7 @@ def viewnewlog(request):
                 [request.user.email],
             )
 
-            email.fail_silently = False
-            email.send()
+            email.send(fail_silently=True)
 
             return HttpResponseRedirect("/newlog?submitted=True")
     else:
