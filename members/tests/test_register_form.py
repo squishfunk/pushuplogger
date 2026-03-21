@@ -1,7 +1,7 @@
 from django.test import TestCase
-from .forms import RegisterForm
+from ..forms import RegisterForm
 
-
+# Funkcja do danych mockowych
 def valid_data(**overrides):
     data = {
         "username": "testuser",
