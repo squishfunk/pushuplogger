@@ -98,3 +98,80 @@ class LastNameLettersOnlyTest(TestCase):
         form = RegisterForm(data=valid_data(last_name="Kowal ski"))
         self.assertFalse(form.is_valid())
         self.assertIn("last_name", form.errors)
+
+
+class PasswordValidationTest(TestCase):
+
+    def test_TC17_password_all_criteria_met(self):
+        form = RegisterForm(data=valid_data(password1="Haslo123!", password2="Haslo123!"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC18_password_missing_uppercase(self):
+        form = RegisterForm(data=valid_data(password1="haslo123!", password2="haslo123!"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+    def test_TC19_password_missing_lowercase(self):
+        form = RegisterForm(data=valid_data(password1="HASLO123!", password2="HASLO123!"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+    def test_TC20_password_missing_special_char(self):
+        form = RegisterForm(data=valid_data(password1="Haslo123", password2="Haslo123"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+    def test_TC21_password_missing_digit(self):
+        form = RegisterForm(data=valid_data(password1="Haslo!!!", password2="Haslo!!!"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+    def test_TC22_password_too_short(self):
+        form = RegisterForm(data=valid_data(password1="Ab1!", password2="Ab1!"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+    def test_TC23_password_exactly_8_chars(self):
+        form = RegisterForm(data=valid_data(password1="Abcde12!", password2="Abcde12!"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC24_password_exactly_64_chars(self):
+        form = RegisterForm(data=valid_data(password1="a" * 64, password2="a" * 64))
+        self.assertTrue(form.is_valid())
+
+    def test_TC25_password_too_long(self):
+        form = RegisterForm(data=valid_data(password1="a" * 65, password2="a" * 65))
+        self.assertFalse(form.is_valid())
+        self.assertIn("password1", form.errors)
+
+
+class UsernameValidationTest(TestCase):
+
+    def test_TC26_username_max_length_30(self):
+        form = RegisterForm(data=valid_data(username="u" * 30))
+        self.assertTrue(form.is_valid())
+
+    def test_TC27_username_over_30_chars(self):
+        form = RegisterForm(data=valid_data(username="u" * 31))
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+
+    def test_TC28_username_min_length_3(self):
+        form = RegisterForm(data=valid_data(username="abc"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC29_username_under_3_chars(self):
+        form = RegisterForm(data=valid_data(username="ab"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+
+    def test_TC30_username_existing_in_db(self):
+        from django.contrib.auth.models import User
+        User.objects.create_user(username="testadmin", password="TestPass123!")
+        form = RegisterForm(data=valid_data(username="testadmin"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("username", form.errors)
+
+    def test_TC31_username_new_unique(self):
+        form = RegisterForm(data=valid_data(username="user123"))
+        self.assertTrue(form.is_valid())
