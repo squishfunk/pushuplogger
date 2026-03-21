@@ -1,11 +1,14 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import RegexValidator
 from main.models import Person
 
+letters_only = RegexValidator(r'^[A-Za-zÀ-ÖØ-öø-ÿ]+$', 'Pole może zawierać tylko litery.')
+
 class RegisterForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
+    first_name = forms.CharField(max_length=30, min_length=2, required=True, validators=[letters_only])
+    last_name = forms.CharField(max_length=30, min_length=2, required=True, validators=[letters_only])
     nickname = forms.CharField(max_length=30, required=False)
     age = forms.IntegerField(required=True)
     email = forms.EmailField(required=True)
