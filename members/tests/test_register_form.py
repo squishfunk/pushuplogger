@@ -1,4 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+
+from main.models import Person
 from ..forms import RegisterForm
 
 # Funkcja do danych mockowych
@@ -136,7 +139,7 @@ class PasswordValidationTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_TC24_password_exactly_64_chars(self):
-        form = RegisterForm(data=valid_data(password1="a" * 64, password2="a" * 64))
+        form = RegisterForm(data=valid_data(password1="Abcde12!" + "a" * 56, password2="Abcde12!" + "a" * 56))
         self.assertTrue(form.is_valid())
 
     def test_TC25_password_too_long(self):
@@ -175,3 +178,75 @@ class UsernameValidationTest(TestCase):
     def test_TC31_username_new_unique(self):
         form = RegisterForm(data=valid_data(username="user123"))
         self.assertTrue(form.is_valid())
+
+
+class NicknameValidationTest(TestCase):
+
+    def test_TC32_nickname_empty(self):
+        form = RegisterForm(data=valid_data(nickname=""))
+        self.assertTrue(form.is_valid())
+
+    def test_TC33_nickname_max_length_30(self):
+        form = RegisterForm(data=valid_data(nickname="n" * 30))
+        self.assertTrue(form.is_valid())
+
+    def test_TC34_nickname_min_length_3(self):
+        form = RegisterForm(data=valid_data(nickname="abc"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC35_nickname_under_3_chars(self):
+        form = RegisterForm(data=valid_data(nickname="ab"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("nickname", form.errors)
+
+    def test_TC36_nickname_over_30_chars(self):
+        form = RegisterForm(data=valid_data(nickname="n" * 31))
+        self.assertFalse(form.is_valid())
+        self.assertIn("nickname", form.errors)
+
+    def test_TC37_nickname_existing_in_db(self):
+        User = get_user_model()
+        new_user = User.objects.create_user(username="testadmin_user", password="TestPass123!")
+        Person.objects.create(
+            user=new_user,
+            nickname="testadmin",
+            name="Test",
+            surname="Admin"
+        )
+        form = RegisterForm(data=valid_data(nickname="testadmin"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("nickname", form.errors)
+
+    def test_TC38_nickname_new_unique(self):
+        form = RegisterForm(data=valid_data(nickname="user123"))
+        self.assertTrue(form.is_valid())
+
+
+class AgeValidationTest(TestCase):
+
+    def test_TC39_age_max_100(self):
+        form = RegisterForm(data=valid_data(age=100))
+        self.assertTrue(form.is_valid())
+
+    def test_TC40_age_over_100(self):
+        form = RegisterForm(data=valid_data(age=101))
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
+
+    def test_TC41_age_min_7(self):
+        form = RegisterForm(data=valid_data(age=7))
+        self.assertTrue(form.is_valid())
+
+    def test_TC42_age_under_7(self):
+        form = RegisterForm(data=valid_data(age=6))
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
+
+    def test_TC43_age_as_integer(self):
+        form = RegisterForm(data=valid_data(age=50))
+        self.assertTrue(form.is_valid())
+
+    def test_TC44_age_as_float(self):
+        form = RegisterForm(data=valid_data(age=50.5))
+        self.assertFalse(form.is_valid())
+        self.assertIn("age", form.errors)
