@@ -1,0 +1,1 @@
+python3 -m pytest tests/test_register_playwright.py -v
