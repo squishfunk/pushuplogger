@@ -13,7 +13,7 @@ class RegisterForm(UserCreationForm):
     username = forms.CharField(max_length=30, min_length=3, required=True)
     nickname = forms.CharField(max_length=30, min_length=3, required=False)
     age = forms.IntegerField(required=True, validators=[MinValueValidator(7), MaxValueValidator(100)])
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(max_length=254, min_length=5, required=True)
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -26,6 +26,12 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError("There is a user witch such a nickname!")
 
         return nickname
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists!")
+        return email
 
     def clean_password1(self):
         password = self.cleaned_data.get("password1")
