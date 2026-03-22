@@ -250,3 +250,72 @@ class AgeValidationTest(TestCase):
         form = RegisterForm(data=valid_data(age=50.5))
         self.assertFalse(form.is_valid())
         self.assertIn("age", form.errors)
+
+class EmailValidationTest(TestCase):
+
+    def test_TC45_email_valid_format(self):
+        form = RegisterForm(data=valid_data(email="test@example.com"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC46_email_no_local_part(self):
+        form = RegisterForm(data=valid_data(email="@example.com"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC47_email_no_domain(self):
+        form = RegisterForm(data=valid_data(email="test@"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC48_email_forbidden_chars_in_domain(self):
+        form = RegisterForm(data=valid_data(email="test@dom#ena.com"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC49_email_forbidden_chars_in_local(self):
+        form = RegisterForm(data=valid_data(email="te st@example.com"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC50_email_max_length_254(self):
+        local = "a" * 243
+        email = f"{local}@example.pl"  # 243 + 1 + 10 = 254
+        form = RegisterForm(data=valid_data(email=email))
+        self.assertTrue(form.is_valid())
+
+    def test_TC51_email_over_254(self):
+        local = "a" * 244
+        email = f"{local}@example.pl"
+        form = RegisterForm(data=valid_data(email=email))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC52_email_min_length_5(self):
+        form = RegisterForm(data=valid_data(email="a@b.co"))
+        self.assertTrue(form.is_valid())
+
+    def test_TC53_email_under_5(self):
+        form = RegisterForm(data=valid_data(email="a@b"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC54_email_already_exists(self):
+        User = get_user_model()
+        new_user = User.objects.create_user(
+            username="existing_user",
+            email="stary@wp.pl",
+            password="Test1234!"
+        )
+        Person.objects.create(
+            user=new_user,
+            nickname="existing",
+            name="Test",
+            surname="User"
+        )
+        form = RegisterForm(data=valid_data(email="stary@wp.pl"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("email", form.errors)
+
+    def test_TC55_email_new(self):
+        form = RegisterForm(data=valid_data(email="nowy@wp.pl"))
+        self.assertTrue(form.is_valid())
