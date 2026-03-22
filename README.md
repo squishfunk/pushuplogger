@@ -3,6 +3,6 @@
 ## Skład grupy
 * **Lider:** Gustaw Masiewicz
 * Damian Kitlas
-* Anna Czapska
+* Michał Jurewicz
 * Szymon Mackiewicz
 * Gustaw Masiewicz
