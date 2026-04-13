@@ -7,6 +7,7 @@ import requests
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 
+
 @pytest.fixture(scope="session")
 def django_server():
     """Start Django dev server for Playwright tests."""
@@ -17,7 +18,6 @@ def django_server():
         cwd=os.path.dirname(os.path.abspath(__file__)) or ".",
     )
     
-    # Wait for server to be ready
     max_attempts = 30
     for i in range(max_attempts):
         try:
@@ -34,3 +34,10 @@ def django_server():
     
     proc.terminate()
     proc.wait()
+
+
+def pytest_configure(config):
+    """Register custom markers."""
+    config.addinivalue_line(
+        "markers", "asyncio: mark test as async"
+    )
