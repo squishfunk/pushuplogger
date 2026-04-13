@@ -51,18 +51,14 @@ class TestAPIEndpoints:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         
-        # Przejdź do strony dodawania treningu -upewnij się że jesteśmy zalogowani
         page.goto(f"{django_server}/newlog/")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(1000)
         
-        # Sprawdź czy formularz jest widoczny (może być redirect do login)
         current_url = page.url
         if "/login" in current_url:
-            # Jesteśmy na stronie logowania - oznacz to jako część weryfikacji
             assert True, "User is not logged in, redirected to login"
         else:
-            # Jesteśmy na stronie treningu - sprawdź formularz
             assert page.locator("#id_exercise_type").count() > 0 or page.locator("form").count() > 0, \
                 "Training form should be visible when logged in"
 
@@ -73,6 +69,5 @@ class TestAPIEndpoints:
         """
         response = page.request.get(f"{django_server}/home/")
         
-        # Strona wymaga logowania - sprawdź status
         assert response.status in [200, 302, 301, 401, 404], \
             f"API request should return valid status, got {response.status}"

@@ -40,10 +40,8 @@ class TestAuthenticationOptimization:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         
-        # Pobierz cookies - sesja powinna być aktywna
         cookies = page.context.cookies()
         
-        # Weryfikacja - sprawdź czy mamy cookies po rejestracji
         assert len(cookies) > 0, "Should have cookies after registration for session reuse"
 
     def test_auth_02_cookie_based_login(self, page: Page, django_server: str):
@@ -71,13 +69,10 @@ class TestAuthenticationOptimization:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         
-        # Pobierz cookies z aktualnego context
         cookies = page.context.cookies()
         
-        # Weryfikacja że mamy cookies po zalogowaniu
         assert len(cookies) > 0, "Should have cookies after login"
         
-        # Sprawdź czy jest cookie sesyjne
         session_cookies = [c for c in cookies if 'session' in c['name'].lower()]
         assert len(session_cookies) > 0 or len(cookies) > 0, "Should have session cookies"
 
@@ -90,7 +85,6 @@ class TestAuthenticationOptimization:
         """
         rp = RegisterPage(page, django_server)
         
-        # Krok 1: Pierwsze logowanie
         rp.navigate()
         
         username1 = unique_username("cycle1")
@@ -108,17 +102,14 @@ class TestAuthenticationOptimization:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         
-        # Pobierz cookies przed wylogowaniem
         cookies_before = page.context.cookies()
         
         # Krok 2: Wylogowanie
         page.goto(f"{django_server}/members/logout_user/")
         page.wait_for_load_state("networkidle")
         
-        # Sprawdź że cookies zostały usunięte
         cookies_after = page.context.cookies()
         
-        # Krok 3: Ponowne logowanie jako inny użytkownik
         rp.navigate()
         
         username2 = unique_username("cycle2")
@@ -136,8 +127,6 @@ class TestAuthenticationOptimization:
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(2000)
         
-        # Weryfikacja że nowe cookies zostały ustawione
         cookies_new = page.context.cookies()
         
-        # Sprawdź czy są nowe cookies po ponownym logowaniu
         assert len(cookies_new) > 0, "Should have cookies after second login"

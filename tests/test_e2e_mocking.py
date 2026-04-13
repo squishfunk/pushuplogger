@@ -45,7 +45,6 @@ class TestFrontendMocking:
         """
         page = logged_in_page
         
-        # Mockowane dane (bez emoji dla uniknięcia problemów z kodowaniem)
         mock_top5_html = """
         <!DOCTYPE html>
         <html><body>
@@ -59,7 +58,6 @@ class TestFrontendMocking:
         </body></html>
         """
         
-        # Mockowanie zapytania do /top5/
         def handle_top5_route(route):
             route.fulfill(
                 status=200,
@@ -69,11 +67,9 @@ class TestFrontendMocking:
         
         page.route(f"{django_server}/top5/**", handle_top5_route)
         
-        # Otwórz stronę TOP5
         page.goto(f"{django_server}/top5/")
         page.wait_for_load_state("networkidle")
         
-        # Weryfikacja mock danych
         assert "Jan Kowalski" in page.content()
         assert "Anna Nowak" in page.content()
         assert "500" in page.content()
@@ -88,7 +84,6 @@ class TestFrontendMocking:
         """
         page = logged_in_page
         
-        # Mock strony domowej z kontrolowanymi statystykami
         mock_home_html = """
         <!DOCTYPE html>
         <html>
@@ -122,7 +117,6 @@ class TestFrontendMocking:
         page.goto(f"{django_server}/home/")
         page.wait_for_load_state("networkidle")
         
-        # Weryfikacja mockowanych statystyk
         assert "99 dni" in page.content()
         assert "365 dni" in page.content()
 
@@ -135,7 +129,6 @@ class TestFrontendMocking:
         """
         page = logged_in_page
         
-        # Mock osiągnięć (bez emoji)
         mock_achievements_html = """
         <!DOCTYPE html>
         <html>
@@ -171,7 +164,6 @@ class TestFrontendMocking:
         page.goto(f"{django_server}/home/")
         page.wait_for_load_state("networkidle")
         
-        # Weryfikacja mockowanych osiągnięć
         assert "Pierwszy Krok" in page.content()
         assert "Tysiacznik" in page.content()
         assert "Wytrwaly" in page.content()
